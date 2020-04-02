@@ -1,0 +1,18 @@
+[Unit]
+Description=StorageGateWay Process Restart Upstart Script
+After=auditd.service systemd-user-sessions.service time-sync.target http-file.service mini-http.service
+
+[Service]
+User=root
+TimeoutStartSec=0
+Type=simple
+KillMode=process
+SyslogIdentifier=StorageMaintainer
+WorkingDirectory=/data/inphase/StorageMaintainer
+ExecStart=/data/inphase/StorageMaintainer/StorageMaintainer_linux -u http://192.168.2.64:8099/imccp-mediacore -t t1000 --ntsc-url http://www.baidu.com/ -d 1 -recovery-time 60 -SingleDealLimit 100000
+Restart=always
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

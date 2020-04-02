@@ -1,0 +1,15 @@
+syntax = "proto3";
+package Client;
+
+message DC_Request {
+    bool bGetNew = 1;
+}
+
+message DC_Respond {
+    int32 strRespond = 1; //收到通知回复1
+}
+
+service DC_Notification {
+    rpc DC_Notify (DC_Request) returns (DC_Respond) {
+    }
+}
