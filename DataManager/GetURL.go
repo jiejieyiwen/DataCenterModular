@@ -1,7 +1,7 @@
 package DataManager
 
 import (
-	"DataCenterModular/Config"
+	"Config"
 	DataCenterDefine "DataCenterModular/DataDefine"
 	"encoding/json"
 	"errors"

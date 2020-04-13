@@ -8,6 +8,12 @@ import (
 )
 
 func (pThis *DataManagement) GetSearchSever() (string, error) {
+	if pThis.m_pRedisConn == nil {
+		pThis.m_logger.Error("m_pRedisConn is nil")
+	}
+	if pThis.m_pRedisConn.Client == nil {
+		pThis.m_logger.Error("m_pRedisConn.Client is nil")
+	}
 	res, err := pThis.m_pRedisConn.Client.Get("SearchServer").Result()
 	if err != nil {
 		return "", err

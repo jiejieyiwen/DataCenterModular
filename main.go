@@ -1,7 +1,7 @@
 package main
 
 import (
-	"DataCenterModular/Config"
+	"Config"
 	"DataCenterModular/DataManager"
 	"iPublic/EnvLoad"
 	"iPublic/LoggerModular"
@@ -14,10 +14,12 @@ func init() {
 func TestDataCenter() {
 	logger := LoggerModular.GetLogger()
 
+	conf := Config.GetConfig()
 	if err := Config.ReadConfig(); err != nil {
 		logger.Error(err)
 		return
 	}
+	logger.Infof("conf is [%v]", conf)
 
 	temp := DataManager.GetDataManagement()
 	if err := temp.Init(); nil != err {

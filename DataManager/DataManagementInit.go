@@ -1,7 +1,7 @@
 package DataManager
 
 import (
-	"DataCenterModular/Config"
+	"Config"
 	DataCenterDefine "DataCenterModular/DataDefine"
 	"DataCenterModular/GRpcClient"
 	"github.com/sirupsen/logrus"
@@ -88,7 +88,7 @@ func (pThis *DataManagement) initData() {
 	var err error
 	DataCenterDefine.Token, err = iAuthorize.AesAuthorize(Config.GetConfig().DataUrlConfig.AuthURL, Config.GetConfig().DataUrlConfig.DataUserName, Config.GetConfig().DataUrlConfig.DataPassWord, Config.GetConfig().DataUrlConfig.ClientID, Config.GetConfig().DataUrlConfig.ClientSecret)
 	if err != nil {
-		pThis.m_logger.Errorf("Get User Token Error")
+		pThis.m_logger.Errorf("Get User Token Error", err)
 		pThis.m_logger.Info("Init DC Failed")
 		return
 	} else {
