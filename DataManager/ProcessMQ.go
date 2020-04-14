@@ -195,6 +195,12 @@ func (pThis *DataManagement) HanddleNetType(msg DataCenterDefine.MessageBody) {
 			pThis.m_pRedisConn.Client.HSet(strPrefix+DataCenterDefine.REDIS_DATA_SUFFIX_DATA, netType.NetTypeID, data)
 			pThis.m_logger.Infof("Write NetType Success,NetTypeID [%s]", netType.NetTypeID)
 			//通知客户端
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(msg.OperationTarget), int32(msg.OperationType), arrData)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 			pThis.notifyToAllServer(msg.OperationType, DataCenterDefine.TARGET_NETTYPE, netType)
 		}
 	case DataCenterDefine.OPERATION_DELETE:
@@ -202,6 +208,11 @@ func (pThis *DataManagement) HanddleNetType(msg DataCenterDefine.MessageBody) {
 			//{"operationTarget":4,
 			//"operationType":3,
 			//"data":"1071413585922359297"}
+			arrData, err := json.Marshal(msg.Data)
+			if nil != err {
+				pThis.m_logger.Error(err.Error())
+				return
+			}
 			netTypeID, _ := msg.Data.(string)
 			strPrefix := pThis.getWriteInRedisKey(DataCenterDefine.NAME_NET_TYPE)
 			strList := strPrefix + DataCenterDefine.REDIS_DATA_SUFFIX_LIST
@@ -215,6 +226,12 @@ func (pThis *DataManagement) HanddleNetType(msg DataCenterDefine.MessageBody) {
 				pThis.m_logger.Infof("Delete netType Failed ,netTypeID[%s]", netTypeID)
 				return
 			}
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(msg.OperationTarget), int32(msg.OperationType), arrData)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 			pThis.m_logger.Infof("Delete netType Success ,netTypeID[%s]", netTypeID)
 		}
 	case DataCenterDefine.OPERATION_BATCH_ADD:
@@ -272,6 +289,12 @@ func (pThis *DataManagement) OperationChannelInfoByMQ(
 			pThis.m_logger.Infof("Write New ChannelStorageInfo:Data Success, Id[%v]", channelStorage.Id)
 
 			////通知客户端
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(opType), int32(DataCenterDefine.OPERATION_ADD), data)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 			//pThis.notifyToAllServer(opType, DataCenterDefine.TARGET_CHANNEL_STORAGE_INFO, channelStorage)
 			//
 			//data, _ = pThis.getWriteInRedisData(&tmpChannelInfo.ChannelInfo)
@@ -320,6 +343,12 @@ func (pThis *DataManagement) OperationChannelInfoByMQ(
 			//pThis.m_pRedisConn.Client.HSet(strPrefix+DataCenterDefine.REDIS_DATA_SUFFIX_DATA, channelStorage.Id, data)
 			//pThis.m_logger.Infof("Update ChannelStorageInfo Success,Key :ChannelID[%s]", channelStorage.Id)
 			//通知客户端
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(opType), int32(DataCenterDefine.OPERATION_UPDATE), data)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 			//pThis.notifyToAllServer(opType, DataCenterDefine.TARGET_CHANNEL_STORAGE_RELATIONSHIP, channelStorage)
 			//return "", nil
 		}
@@ -353,6 +382,12 @@ func (pThis *DataManagement) OperationChannelInfoByMQ(
 			//	pThis.m_logger.Errorf("Delete ChannelStorage:Data Failed, DeviceId[%s]", channelStorage.ChannelID)
 			//	return "ERROR", errors.New("No Find channelStorage")
 			//}
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(opType), int32(DataCenterDefine.OPERATION_DELETE), data)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 		}
 	}
 	return "", nil
@@ -379,6 +414,12 @@ func (pThis *DataManagement) OperationChannelStorageInfoByMQ(
 			pThis.m_pRedisConn.Client.HSet(strPrefix+DataCenterDefine.REDIS_DATA_SUFFIX_DATA, channelStorageInfo.Id, data)
 			pThis.m_logger.Infof("Write ChannelStorageInfo Success,ChannelStorageID [%s]", channelStorageInfo.Id)
 			//通知客户端
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(opType), int32(DataCenterDefine.OPERATION_UPDATE), data)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 			pThis.notifyToAllServer(opType, DataCenterDefine.TARGET_CHANNEL_STORAGE_INFO, channelStorageInfo)
 			return "", nil
 		}
@@ -396,6 +437,12 @@ func (pThis *DataManagement) OperationChannelStorageInfoByMQ(
 			}
 			pThis.m_logger.Infof("Delete channelStorage Success ,id[%s]", id)
 			pThis.m_pRedisConn.Client.LRem(strPrefix+DataCenterDefine.REDIS_DATA_SUFFIX_LIST, 0, id)
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(opType), int32(DataCenterDefine.OPERATION_DELETE), data)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 			return "", nil
 		}
 	case DataCenterDefine.OPERATION_BATCH_ADD:
@@ -440,6 +487,12 @@ func (pThis *DataManagement) HanddleStorageMediumInfo(msg DataCenterDefine.Messa
 			pThis.m_pRedisConn.Client.HSet(strPrefix+DataCenterDefine.REDIS_DATA_SUFFIX_DATA, storageMediumInfo.StorageMediumInfoID, data)
 			pThis.m_logger.Infof("Write StorageMediumData Success,StorageMediumInfoID [%s]", storageMediumInfo.StorageMediumInfoID)
 			//通知服务器
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(msg.OperationTarget), int32(msg.OperationType), arrData)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 			pThis.notifyToAllServer(msg.OperationType, DataCenterDefine.TARGET_STORAGE_MEDIUM_INFO, storageMediumData)
 		}
 
@@ -448,6 +501,11 @@ func (pThis *DataManagement) HanddleStorageMediumInfo(msg DataCenterDefine.Messa
 			//{"operationTarget":7,
 			//"operationType":3,
 			//"data":"1071413585922359297"}
+			arrData, err := json.Marshal(msg.Data)
+			if nil != err {
+				pThis.m_logger.Error(err.Error())
+				return
+			}
 			storageMediumInfoID, _ := msg.Data.(string)
 			strPrefix := pThis.getWriteInRedisKey(DataCenterDefine.NAME_STORAGE_MEDIUM_INFO)
 			//删除
@@ -459,6 +517,12 @@ func (pThis *DataManagement) HanddleStorageMediumInfo(msg DataCenterDefine.Messa
 			}
 			pThis.m_logger.Infof("Delete channelStorage Success ,storageMediumInfoID[%s]", storageMediumInfoID)
 			pThis.m_pRedisConn.Client.LRem(strPrefix+DataCenterDefine.REDIS_DATA_SUFFIX_LIST, 0, storageMediumInfoID)
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(msg.OperationTarget), int32(msg.OperationType), arrData)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 		}
 	case DataCenterDefine.OPERATION_BATCH_ADD:
 	case DataCenterDefine.OPERATION_BATCH_UPDATE:
@@ -498,6 +562,12 @@ func (pThis *DataManagement) HanddleStoragePolicyInfo(msg DataCenterDefine.Messa
 			pThis.m_logger.Infof("Write StoragePolicyData Success,StoragePolicyDataID [%s]", storagePolicyInfo.StoragePolicyID)
 
 			//通知服务器
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(msg.OperationTarget), int32(msg.OperationType), arrData)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 			pThis.notifyToAllServer(msg.OperationType, DataCenterDefine.TARGET_STORAGE_POLICY_INFO, storagePolicyInfo)
 		}
 	case DataCenterDefine.OPERATION_DELETE:
@@ -505,6 +575,11 @@ func (pThis *DataManagement) HanddleStoragePolicyInfo(msg DataCenterDefine.Messa
 			//{"operationTarget":8,
 			//"operationType":3,
 			//"data":"1071413585922359297"}
+			arrData, err := json.Marshal(msg.Data)
+			if nil != err {
+				pThis.m_logger.Error(err.Error())
+				return
+			}
 			storagePolicyInfoID, _ := msg.Data.(string)
 			strPrefix := pThis.getWriteInRedisKey(DataCenterDefine.NAME_STORAGE_POLICY_INFO)
 			//删除
@@ -516,6 +591,12 @@ func (pThis *DataManagement) HanddleStoragePolicyInfo(msg DataCenterDefine.Messa
 			}
 			pThis.m_logger.Infof("Delete channelStorage Success ,storagePolicyInfoID[%s]", storagePolicyInfoID)
 			pThis.m_pRedisConn.Client.LRem(strPrefix+DataCenterDefine.REDIS_DATA_SUFFIX_LIST, 0, storagePolicyInfoID)
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(msg.OperationTarget), int32(msg.OperationType), arrData)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 
 		}
 	case DataCenterDefine.OPERATION_BATCH_ADD:
@@ -549,11 +630,22 @@ func (pThis *DataManagement) HanddleStorageSchemeInfo(msg DataCenterDefine.Messa
 			pThis.m_pRedisConn.HSet(strPrefix+DataCenterDefine.REDIS_DATA_SUFFIX_DATA, storageSchemeData.StorageSchemeInfoID, data)
 			pThis.m_logger.Infof("Write StorageSchemeInfo Success,StorageSchemeInfoID [%s]", storageSchemeData.StorageSchemeInfoID)
 			//通知服务器
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(msg.OperationTarget), int32(msg.OperationType), arrData)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 			pThis.notifyToAllServer(msg.OperationType, DataCenterDefine.TARGET_STORAGE_SCHEME_INFO, storageSchemeData)
 		}
 
 	case DataCenterDefine.OPERATION_DELETE:
 		{
+			arrData, err := json.Marshal(msg.Data)
+			if nil != err {
+				pThis.m_logger.Error(err.Error())
+				return
+			}
 			storageSchemeDataID, _ := msg.Data.(string)
 			strPrefix := pThis.getWriteInRedisKey(DataCenterDefine.NAME_STORAGE_SCHEME_INFO)
 			//删除
@@ -565,7 +657,12 @@ func (pThis *DataManagement) HanddleStorageSchemeInfo(msg DataCenterDefine.Messa
 			}
 			pThis.m_logger.Infof("Delete channelStorage Success ,storageSchemeDataID[%s]", storageSchemeDataID)
 			pThis.m_pRedisConn.Client.LRem(strPrefix+DataCenterDefine.REDIS_DATA_SUFFIX_LIST, 0, storageSchemeDataID)
-
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(msg.OperationTarget), int32(msg.OperationType), arrData)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 		}
 	case DataCenterDefine.OPERATION_BATCH_ADD:
 	case DataCenterDefine.OPERATION_BATCH_UPDATE:
@@ -623,6 +720,12 @@ func (pThis *DataManagement) HanddleStorageSchemeDetailInfo(msg DataCenterDefine
 			pThis.m_pRedisConn.HSet(strPrefix+DataCenterDefine.REDIS_DATA_SUFFIX_DATA, storageSchemeInfo.StorageSchemeInfoID, data)
 			pThis.m_logger.Infof("Write StorageSchemeInfo Success,StorageSchemeInfoID [%s]", storageSchemeInfo.StorageSchemeInfoID)
 			//通知服务器
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(msg.OperationTarget), int32(msg.OperationType), arrData)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 			pThis.notifyToAllServer(msg.OperationType, DataCenterDefine.TARGET_STORAGE_SCHEME_INFO, storageSchemeInfo)
 		}
 	case DataCenterDefine.OPERATION_UPDATE:
@@ -678,12 +781,29 @@ func (pThis *DataManagement) HanddleStorageSchemeDetailInfo(msg DataCenterDefine
 			pThis.m_pRedisConn.HSet(strPrefix+DataCenterDefine.REDIS_DATA_SUFFIX_DATA, storageSchemeInfo.StorageSchemeInfoID, data)
 			pThis.m_logger.Infof("Write StorageSchemeInfo Success,StorageSchemeInfoID [%s]", storageSchemeInfo.StorageSchemeInfoID)
 			//通知服务器
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(msg.OperationTarget), int32(msg.OperationType), arrData)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 			pThis.notifyToAllServer(msg.OperationType, DataCenterDefine.TARGET_STORAGE_SCHEME_INFO, storageSchemeInfo)
 		}
 	case DataCenterDefine.OPERATION_DELETE:
 		{
+			arrData, err := json.Marshal(msg.Data)
+			if nil != err {
+				pThis.m_logger.Error(err.Error())
+				return
+			}
 			storageSchemeDetailDataID, _ := msg.Data.(string)
 			fmt.Println(storageSchemeDetailDataID)
+			var client Client.GRpcClient
+			err, res := client.GrpcSendNotifyToStorage(int32(msg.OperationTarget), int32(msg.OperationType), arrData)
+			if err != nil {
+				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			}
+			pThis.m_logger.Infof("Get Respond: [%v]", res)
 		}
 	case DataCenterDefine.OPERATION_BATCH_ADD:
 		{
@@ -785,7 +905,13 @@ func (pThis *DataManagement) HanddleDeviceIDStorageInfo(msg DataCenterDefine.Mes
 
 			//通知服务器
 			var client Client.GRpcClient
-			err, res := client.GrpcSendNotify()
+			//err, res := client.GrpcSendNotify()
+			//if err != nil {
+			//	pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			//}
+			//pThis.m_logger.Infof("Get Respond: [%v]", res)
+
+			err, res := client.GrpcSendNotifyToStorage(int32(msg.OperationTarget), int32(msg.OperationType), arrData)
 			if err != nil {
 				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
 			}
@@ -841,7 +967,13 @@ func (pThis *DataManagement) HanddleDeviceIDStorageInfo(msg DataCenterDefine.Mes
 
 			//通知服务器
 			var client Client.GRpcClient
-			err, res := client.GrpcSendNotify()
+			//err, res := client.GrpcSendNotify()
+			//if err != nil {
+			//	pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			//}
+			//pThis.m_logger.Infof("Get Respond: [%v]", res)
+
+			err, res := client.GrpcSendNotifyToStorage(int32(msg.OperationTarget), int32(msg.OperationType), arrData)
 			if err != nil {
 				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
 			}

@@ -73,13 +73,13 @@ func (pThis *GRpcClient) GrpcSendNotify() (error, int32) {
 	return nil, res.StrRespond
 }
 
-func (pThis *GRpcClient) GrpcSendNotifyToStorage(target, types int32, data []byte) (error, int32) {
+func (pThis *GRpcClient) GrpcSendNotifyToStorage(target, types int32, data []byte) (error, string) {
 	if err := pThis.GRpcDial(DataDefine2.STORAGE_URL); err != nil {
-		return err, -1
+		return err, "-1"
 	}
 	res, err := pThis.SendMsgToStorage(target, types, data)
 	if err != nil {
-		return err, -2
+		return err, "2"
 	}
-	return nil, res.XXX_sizecache
+	return nil, res.StrCode
 }
