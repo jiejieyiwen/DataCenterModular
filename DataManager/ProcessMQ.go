@@ -898,11 +898,18 @@ func (pThis *DataManagement) HanddleDeviceIDStorageInfo(msg DataCenterDefine.Mes
 
 			//通知更新
 			var client Client.GRpcClient
-			err, res := client.GrpcSendNotify()
+			//err, res := client.GrpcSendNotify()
+			//if err != nil {
+			//	pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
+			//}
+			//pThis.m_logger.Infof("Get Respond: [%v]", res)
+
+			err, res := client.GrpcSendNotifyToStorage(int32(msg.OperationTarget), int32(msg.OperationType), arrData)
 			if err != nil {
 				pThis.m_logger.Infof("Send Notify To SearchServer Error: [%v]", err)
 			}
 			pThis.m_logger.Infof("Get Respond: [%v]", res)
+
 			pThis.notifyToAllServer(msg.OperationType, DataCenterDefine.TARGET_STORAGE_SCHEME_DETAIL_INFO, deviceIDStorageData)
 		}
 	case DataCenterDefine.OPERATION_BATCH_ADD:

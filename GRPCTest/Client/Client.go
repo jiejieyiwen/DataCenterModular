@@ -50,10 +50,19 @@ func (pThis *GRpcClient) SendMsg() (*DC_Respond, error) {
 	return res, nil
 }
 
+func (pThis *GRpcClient) SendMsgToStorage(targets, types int32, datas []byte) (*MessagedataInfo_Response, error) {
+	con := NewStorageInfoClient(pThis.m_pClientCon)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	req := MessagedataInfo_Request{LOperationTarget: targets, LOperationType: types, BData: datas}
+	res, err := con.PushStoragedataInfo(ctx, &req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 func (pThis *GRpcClient) GrpcSendNotify() (error, int32) {
-	//var con GRpcClient
-	//conf := EnvLoad.GetConf()
-	//DataDefine2.TEMP_GRPC += strconv.Itoa(conf.HttpPort)
 	if err := pThis.GRpcDial(DataDefine2.TEMP_GRPC); err != nil {
 		return err, -1
 	}
@@ -62,4 +71,15 @@ func (pThis *GRpcClient) GrpcSendNotify() (error, int32) {
 		return err, -2
 	}
 	return nil, res.StrRespond
+}
+
+func (pThis *GRpcClient) GrpcSendNotifyToStorage(target, types int32, data []byte) (error, int32) {
+	if err := pThis.GRpcDial(DataDefine2.STORAGE_URL); err != nil {
+		return err, -1
+	}
+	res, err := pThis.SendMsgToStorage(target, types, data)
+	if err != nil {
+		return err, -2
+	}
+	return nil, res.XXX_sizecache
 }
